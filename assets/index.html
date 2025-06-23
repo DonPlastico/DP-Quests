@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quests Management</title>
+    <script src="https://kit.fontawesome.com/610ae1a27e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <span>QUESTS MANAGEMENT</span>
+            <div id="header-buttons">
+                <button id="add-location">+ ADD LOCATION</button>
+                <button id="add-mission">+ ADD MISSION</button>
+            </div>
+        </div>
+        <div id="lists">
+            <div class="seccion">
+                <div class="list-section">
+                    <div class="list-title">LOCATIONS LIST</div>
+                    <div class="list-content" id="locations-list">
+                        <div class="list-empty">No locations added</div>
+                    </div>
+                </div>
+            </div>
+            <div class="seccion">
+                <div class="list-section">
+                    <div class="list-title">MISSIONS LIST</div>
+                    <div class="list-content" id="missions-list">
+                        <div class="list-empty">No missions added</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar localización -->
+    <div id="modal-location" class="modal-overlay" style="display:none;">
+        <div class="band-documents-bg"></div>
+        <div class="modal-content">
+            <form>
+                <!-- UBICACIÓN -->
+                <h3>UBICACIÓN</h3>
+                <div class="modal-row">
+                    <div class="modal-group">
+                        <label for="location-name">NOMBRE</label>
+                        <input type="text" id="location-name" placeholder="Nombre de la localización">
+                    </div>
+                    <div class="modal-group">
+                        <label for="location-type">TIPO</label>
+                        <select id="location-type">
+                            <option value="coords">COORDENADAS</option>
+                            <option value="npc">CREAR NPC</option>
+                            <option value="prop">CREAR PROP</option>
+                        </select>
+                    </div>
+                    <div class="modal-group">
+                        <label for="model-prop">MODELO</label>
+                        <input type="text" id="model-prop" placeholder="Modelo" required>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="modal-group">
+                        <label for="location-id">ID ÚNICO</label>
+                        <input type="text" id="location-id" placeholder="ID de la ubicación (Opcional)">
+                    </div>
+                    <div class="modal-group">
+                        <label for="interaction-distance">DISTANCIA DE INTERACCIÓN</label>
+                        <input type="text" id="interaction-distance" placeholder="1.5">
+                    </div>
+                </div>
+                <hr>
+                <br>
+
+                <!-- COORDENADAS -->
+                <h3>COORDENADAS</h3>
+                <div class="modal-row">
+                    <div class="modal-group" style="flex:2;">
+                        <div id="coords-container">
+                            <!-- Aquí se agregarán los grupos de coordenadas -->
+                        </div>
+                        <button type="button" id="add-coords">+</button>
+                    </div>
+                </div>
+                <hr>
+                <br>
+
+                <!-- ANIMACIONES (SOLO NPC) -->
+                <h3>ANIMACIONES (SOLO NPC)</h3>
+                <div class="modal-row">
+                    <div class="modal-group">
+                        <label>ANIMACIÓN DEL JUGADOR AL ACEPTAR MISIÓN</label>
+                        <input type="text" id="player-accept" placeholder="Introduce animación">
+                    </div>
+                    <div class="modal-group">
+                        <label>ANIMACIÓN DEL JUGADOR AL INICIAR LA MISIÓN</label>
+                        <input type="text" id="player-start" placeholder="Introduce animación">
+                    </div>
+                </div>
+                <hr>
+                <br>
+
+                <!-- DIÁLOGO (SOLO NPC) -->
+                <h3>DIÁLOGO (SOLO NPC)</h3>
+                <div class="modal-row">
+                    <div class="modal-group">
+                        <label>DIÁLOGO PRINCIPAL</label>
+                        <input type="text" id="npc-logo" placeholder="Introduce el diálogo principal del NPC">
+                    </div>
+                    <div class="modal-group">
+                        <label>URL AUDIO PRINCIPAL (OPCIONAL)</label>
+                        <input type="text" id="npc-audio" placeholder="Introduce la URL del audio">
+                    </div>
+                </div>
+                <hr>
+
+                <!-- OCULTAR AL COMPLETAR MISION -->
+                <h3>OPCIONES</h3>
+                <div class="modal-row">
+                    <div class="modal-group" style="flex-direction: row; align-items: center;">
+                        <input type="checkbox" id="hide-on-complete" style="width:auto;margin-right:8px;">
+                        <label for="hide-on-complete" style="margin:0;">OCULTAR AL COMPLETAR MISIÓN</label>
+                        <button type="button" id="active-toggle" class="active-toggle-btn">ACTIVA</button>
+                    </div>
+                </div>
+                <hr>
+                <br>
+
+                <!-- MISIONES -->
+                <h3>MISIONES (MÁXIMO 5)</h3>
+                <div class="modal-row">
+                    <div class="modal-group">
+                        <select id="missions-select" multiple size="6">
+                            <option value="mision1">Rescatar al rehén</option>
+                            <option value="mision2">Robo al banco</option>
+                            <option value="mision3">Entrega de paquete</option>
+                            <option value="mision4">Persecución policial</option>
+                            <option value="mision5">Recoger pruebas</option>
+                            <option value="mision6">Vigilar objetivo</option>
+                            <option value="mision7">Desactivar bomba</option>
+                            <option value="mision8">Transportar VIP</option>
+                            <option value="mision9">Infiltración</option>
+                            <option value="mision10">Sabotaje</option>
+                            <option value="mision11">Recuperar vehículo</option>
+                            <option value="mision12">Interrogar sospechoso</option>
+                            <option value="mision13">Defender zona</option>
+                            <option value="mision14">Huir de la policía</option>
+                            <option value="mision15">Investigar escena</option>
+                        </select>
+                        <div id="asignados-list"></div>
+                        <!-- Dentro de tu modal, debajo de las misiones -->
+                        <div class="modal-actions">
+                            <button id="create-location" type="button">CREAR LOCALIZACIÓN</button>
+                            <button id="save-location" type="button" style="display:none;">GUARDAR CAMBIOS</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
