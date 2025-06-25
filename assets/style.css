@@ -101,7 +101,7 @@ body {
 
 .list-section {
     flex: 1;
-    height: 100%;
+    height: 99.5%;
     background: rgba(44, 44, 58, 0.92);
     display: flex;
     flex-direction: column;
@@ -112,7 +112,7 @@ body {
     background: #b03a5b;
     color: #fff;
     font-weight: 700;
-    padding: 13px 22px 13px 22px;
+    padding: 10px 22px 13px 10px;
     font-size: 1.18rem;
     letter-spacing: 1.2px;
     border-bottom: 2px solid #fff2;
@@ -171,7 +171,7 @@ body {
 .modal-content {
     position: relative;
     width: 90vw;
-    height: 90vh;
+    height: auto;
     background: rgba(20, 20, 40, 0.85);
     border-radius: 18px;
     box-shadow: 0 0 40px #000a;
@@ -180,6 +180,7 @@ body {
     flex-direction: column;
     padding: 32px 32px 24px 32px;
     gap: 18px;
+    overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -411,11 +412,29 @@ form label span {
     color: #fff;
     transition: background 0.2s;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .active-toggle-btn.inactive {
     background: #e74c3c;
     color: #fff;
+}
+
+#coords-container {
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 8px;
+    background: #232334;
+    margin-bottom: 8px;
+}
+
+#coords-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+#coords-container::-webkit-scrollbar-thumb {
+    background-color: #b03a5b;
+    border-radius: 5px;
 }
 
 #locations-list {
@@ -513,4 +532,59 @@ form label span {
     margin-left: 10px;
     color: #222;
     font-size: 1.05rem;
+}
+
+#popup-notification,
+#popup-confirm {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(20, 20, 30, 0.45);
+    z-index: 9999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: #232334;
+    color: #fff;
+    padding: 32px 38px;
+    border-radius: 12px;
+    box-shadow: 0 4px 32px #000a;
+    font-size: 1.15rem;
+    min-width: 320px;
+    max-width: 90vw;
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.popup-confirm-actions {
+    margin-top: 22px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+}
+
+#popup-confirm-yes,
+#popup-confirm-no {
+    padding: 8px 28px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    background: #b03a5b;
+    color: #fff;
+    transition: background 0.2s;
+}
+
+#popup-confirm-yes:hover {
+    background: #2ecc71;
+}
+
+#popup-confirm-no:hover {
+    background: #e74c3c;
 }

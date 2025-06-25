@@ -4,10 +4,67 @@ let editingLocationIndex = null;
 const coordsContainer = document.getElementById('coords-container');
 let isActive = true;
 
+function IsPedModelValid(model) {
+    // Lista de algunos modelos válidos (puedes expandirla)
+    const validModels = [
+        'a_m_m_afriamer_01', 'a_m_m_beach_01', 'a_m_m_business_01',
+        'a_m_m_eastsa_01', 'a_m_m_farmer_01', 'a_m_m_genfat_01',
+        'a_m_m_golfer_01', 'a_m_m_hillbilly_01', 'a_m_m_indian_01',
+        'a_m_m_paparazzi_01', 'a_m_m_prolhost_01', 'a_m_m_rurmeth_01',
+        'a_m_m_salton_01', 'a_m_m_skater_01', 'a_m_m_skidrow_01',
+        'a_m_m_socenlat_01', 'a_m_m_tourist_01', 'a_m_m_tramp_01',
+        'a_m_o_acult_01', 'a_m_o_acult_02', 'a_m_o_beach_01',
+        'a_m_o_genstreet_01', 'a_m_o_ktown_01', 'a_m_o_salton_01',
+        'a_m_o_soucent_01', 'a_m_y_acult_01', 'a_m_y_beach_01',
+        'a_m_y_beachvesp_01', 'a_m_y_beachvesp_02', 'a_m_y_bevhills_01',
+        'a_m_y_bevhills_02', 'a_m_y_breakdance_01', 'a_m_y_busicas_01',
+        'a_m_y_business_01', 'a_m_y_clubcust_01', 'a_m_y_cyclist_01'
+        // Añade más modelos según necesites
+    ];
+
+    // Comprueba si el modelo está en la lista (no es perfecto pero ayuda)
+    return validModels.includes(model.toLowerCase());
+}
+
 // Inicializa con un grupo de coordenadas si está vacío
 function resetCoordsContainer(coordsArr = [{}]) {
     coordsContainer.innerHTML = '';
     coordsArr.forEach(c => coordsContainer.appendChild(createCoordsGroup(c)));
+}
+
+// Notificación de error
+function showNotification(msg, timeout = 3500) {
+    const popup = document.getElementById('popup-notification');
+    const content = document.getElementById('popup-notification-content');
+    content.textContent = msg;
+    popup.style.display = 'flex';
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, timeout);
+}
+
+// Confirmación personalizada (devuelve una promesa)
+function showConfirm(msg) {
+    return new Promise(resolve => {
+        const popup = document.getElementById('popup-confirm');
+        const message = document.getElementById('popup-confirm-message');
+        const yesBtn = document.getElementById('popup-confirm-yes');
+        const noBtn = document.getElementById('popup-confirm-no');
+        message.textContent = msg;
+        popup.style.display = 'flex';
+
+        function cleanup(result) {
+            popup.style.display = 'none';
+            yesBtn.removeEventListener('click', onYes);
+            noBtn.removeEventListener('click', onNo);
+            resolve(result);
+        }
+        function onYes() { cleanup(true); }
+        function onNo() { cleanup(false); }
+
+        yesBtn.addEventListener('click', onYes);
+        noBtn.addEventListener('click', onNo);
+    });
 }
 
 // Lista de misiones
@@ -103,6 +160,11 @@ function createCoordsGroup(values = {}) {
 
 // Botón para añadir más grupos
 document.getElementById('add-coords').onclick = function () {
+    const currentCoords = document.querySelectorAll('#coords-container .coords-row');
+    if (currentCoords.length >= 3) {
+        showNotification('Máximo 3 coordenadas permitidas');
+        return;
+    }
     coordsContainer.appendChild(createCoordsGroup());
 };
 
@@ -151,7 +213,7 @@ function renderLocationsList() {
     getLocations().then(locations => {
         list.innerHTML = '';
         if (locations.length === 0) {
-            list.innerHTML = '<div class="list-empty">No locations added</div>';
+            list.innerHTML = '<div class="list-empty">No hay locacizaciones por el momento.</div>';
             return;
         }
         locations.forEach((loc, idx) => {
@@ -304,9 +366,10 @@ document.getElementById('create-location').onclick = function () {
     let error = '';
     if (!name) error += 'El campo NOMBRE es obligatorio.\n';
     if ((type === 'npc' || type === 'prop') && !model) error += 'El campo MODELO es obligatorio.\n';
+    if (type === 'npc' && !IsPedModelValid(model)) error += 'El modelo de NPC no es válido.\n';
     if (coords.length === 0) error += 'Debes añadir al menos unas coordenadas.\n';
     if (error) {
-        alert(error);
+        showNotification(error);
         return;
     }
 
@@ -358,7 +421,7 @@ document.getElementById('save-location').onclick = function () {
     if ((type === 'npc' || type === 'prop') && !model) error += 'El campo MODELO es obligatorio.\n';
     if (coords.length === 0) error += 'Debes añadir al menos unas coordenadas.\n';
     if (error) {
-        alert(error);
+        showNotification(error);
         return;
     }
 
@@ -426,27 +489,74 @@ document.addEventListener('click', function (e) {
 // Cambiar estado ACTIVA/DESACTIVA desde el listado
 document.getElementById('locations-list').addEventListener('click', function (e) {
     const btn = e.target.closest('.active-toggle-btn');
-    const delBtn = e.target.closest('.fa-trash-can');
     if (btn && btn.hasAttribute('data-index')) {
         const idx = parseInt(btn.getAttribute('data-index'));
         getLocations().then(locations => {
             if (!Array.isArray(locations)) locations = [];
-            locations[idx].active = !locations[idx].active;
+            const newState = !locations[idx].active;
+            locations[idx].active = newState;
+
+            // Enviar el cambio al servidor
+            fetch(`https://${GetParentResourceName()}/toggleLocation`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    locationId: locations[idx].id || locations[idx].name,
+                    isActive: newState
+                })
+            });
+
+            // Actualizar visualmente el botón
+            btn.textContent = newState ? 'ACTIVA' : 'DESACTIVA';
+            btn.classList.toggle('inactive', !newState);
+
+            // Guardar los cambios (opcional, ya que el servidor maneja el estado)
             saveLocations(locations);
-            renderLocationsList();
         });
     }
 
-    if (delBtn) {
-        const idx = parseInt(delBtn.parentElement.getAttribute('data-index'));
-        if (confirm('¿Seguro que quieres eliminar esta localización?')) {
+    // BOTÓN DE TP
+    const tpBtn = e.target.closest('.fa-location-dot');
+    if (tpBtn) {
+        const idx = tpBtn.closest('.location-icon').parentElement.parentElement.parentElement.querySelector('.edit-location').getAttribute('data-index');
+        getLocations().then(locations => {
+            const loc = locations[idx];
+            // Usa la primera coordenada del NPC
+            if (loc && loc.coords && loc.coords[0]) {
+                fetch(`https://${GetParentResourceName()}/tpToLocation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        x: loc.coords[0].x,
+                        y: loc.coords[0].y,
+                        z: loc.coords[0].z,
+                        h: loc.coords[0].h
+                    })
+                });
+            }
+        });
+        return;
+    }
+
+    // BOTÓN DE ELIMINAR
+    const deleteBtn = e.target.closest('.fa-trash-can');
+    if (deleteBtn) {
+        const idx = deleteBtn.closest('.location-icon').parentElement.parentElement.parentElement.querySelector('.edit-location').getAttribute('data-index');
+        showConfirm('¿Seguro que quieres eliminar esta localización?').then(confirm => {
+            if (!confirm) return;
             getLocations().then(locations => {
-                if (!Array.isArray(locations)) locations = [];
                 locations.splice(idx, 1);
                 saveLocations(locations);
                 renderLocationsList();
+                // Opcional: notificar al servidor para refrescar NPCs
+                fetch(`https://${GetParentResourceName()}/saveLocations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ json: JSON.stringify(locations) })
+                });
             });
-        }
+        });
+        return;
     }
 });
 

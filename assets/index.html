@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Quests Management</title>
+    <title>Gestión de Quests</title>
     <script src="https://kit.fontawesome.com/610ae1a27e.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,26 +11,26 @@
 <body>
     <div id="container">
         <div id="header">
-            <span>QUESTS MANAGEMENT</span>
+            <span>Gestión de Quests</span>
             <div id="header-buttons">
-                <button id="add-location">+ ADD LOCATION</button>
-                <button id="add-mission">+ ADD MISSION</button>
+                <button id="add-location">+ AÑADIR LOCALIZACIÓN</button>
+                <button id="add-mission">+ AÑADIR MISIÓN</button>
             </div>
         </div>
         <div id="lists">
             <div class="seccion">
                 <div class="list-section">
-                    <div class="list-title">LOCATIONS LIST</div>
+                    <div class="list-title">LISTA DE LOCALIZACIONES</div>
                     <div class="list-content" id="locations-list">
-                        <div class="list-empty">No locations added</div>
+                        <div class="list-empty"></div>
                     </div>
                 </div>
             </div>
             <div class="seccion">
                 <div class="list-section">
-                    <div class="list-title">MISSIONS LIST</div>
+                    <div class="list-title">LISTA DE MISIONES</div>
                     <div class="list-content" id="missions-list">
-                        <div class="list-empty">No missions added</div>
+                        <div class="list-empty">No hay misiones por el momento.</div>
                     </div>
                 </div>
             </div>
@@ -73,20 +73,18 @@
                     </div>
                 </div>
                 <hr>
-                <br>
 
                 <!-- COORDENADAS -->
                 <h3>COORDENADAS</h3>
                 <div class="modal-row">
                     <div class="modal-group" style="flex:2;">
-                        <div id="coords-container">
+                        <div id="coords-container" style="max-height: 150px; overflow-y: auto;">
                             <!-- Aquí se agregarán los grupos de coordenadas -->
                         </div>
-                        <button type="button" id="add-coords">+</button>
+                        <button type="button" id="add-coords" style="margin-top: 10px;">+</button>
                     </div>
                 </div>
                 <hr>
-                <br>
 
                 <!-- ANIMACIONES (SOLO NPC) -->
                 <h3>ANIMACIONES (SOLO NPC)</h3>
@@ -101,7 +99,6 @@
                     </div>
                 </div>
                 <hr>
-                <br>
 
                 <!-- DIÁLOGO (SOLO NPC) -->
                 <h3>DIÁLOGO (SOLO NPC)</h3>
@@ -127,7 +124,6 @@
                     </div>
                 </div>
                 <hr>
-                <br>
 
                 <!-- MISIONES -->
                 <h3>MISIONES (MÁXIMO 5)</h3>
@@ -159,6 +155,22 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Notificación de error -->
+    <div id="popup-notification" style="display:none;">
+        <div class="popup-content" id="popup-notification-content"></div>
+    </div>
+
+    <!-- Popup de confirmación -->
+    <div id="popup-confirm" style="display:none;">
+        <div class="popup-content">
+            <div id="popup-confirm-message"></div>
+            <div class="popup-confirm-actions">
+                <button id="popup-confirm-yes">Aceptar</button>
+                <button id="popup-confirm-no">Cancelar</button>
+            </div>
         </div>
     </div>
 
